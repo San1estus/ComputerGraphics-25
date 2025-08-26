@@ -1,2 +1,1 @@
-"# ComputerGraphics-25" 
-"# ComputerGraphics-25" 
+En este repositorio subire mis tareas/proyectos para la materia de Graficas por Computadora
