@@ -1,0 +1,17 @@
+﻿  GrahamScan.cpp
+C:\Users\jrodr\Documents\Geometria-Computacional\Visualizacion\ProjectPrueba\src\geo.h(25,19): warning C4244: 'inicializando': conversión de 'double' a 'float'; posible pérdida de datos
+  (compilando archivo de origen "src/GrahamScan.cpp")
+  
+C:\Users\jrodr\Documents\Geometria-Computacional\Visualizacion\ProjectPrueba\src\geo.h(57,15): warning C4244: '=': conversión de 'double' a 'float'; posible pérdida de datos
+  (compilando archivo de origen "src/GrahamScan.cpp")
+  
+C:\Users\jrodr\Documents\Geometria-Computacional\Visualizacion\ProjectPrueba\src\GrahamScan.cpp(15,21): warning C4244: 'inicializando': conversión de 'double' a 'float'; posible pérdida de datos
+C:\Users\jrodr\Documents\Geometria-Computacional\Visualizacion\ProjectPrueba\src\GrahamScan.cpp(16,21): warning C4244: 'inicializando': conversión de 'double' a 'float'; posible pérdida de datos
+C:\Users\jrodr\Documents\Geometria-Computacional\Visualizacion\ProjectPrueba\src\GrahamScan.cpp(111,49): warning C4018: '<': no coinciden signed/unsigned
+C:\Users\jrodr\Documents\Geometria-Computacional\Visualizacion\ProjectPrueba\src\GrahamScan.cpp(123,15): warning C4244: 'argumento': conversión de 'time_t' a 'unsigned int'; posible pérdida de datos
+C:\Users\jrodr\Documents\Geometria-Computacional\Visualizacion\ProjectPrueba\src\GrahamScan.cpp(135,27): warning C4244: '=': conversión de 'double' a 'float'; posible pérdida de datos
+C:\Users\jrodr\Documents\Geometria-Computacional\Visualizacion\ProjectPrueba\src\GrahamScan.cpp(138,19): warning C4244: 'inicializando': conversión de 'double' a 'float'; posible pérdida de datos
+LINK : warning LNK4098: la biblioteca predeterminada'MSVCRT' entra en conflicto con otras bibliotecas; use la biblioteca /NODEFAULTLIB:biblioteca
+LINK : warning LNK4098: la biblioteca predeterminada'LIBCMT' entra en conflicto con otras bibliotecas; use la biblioteca /NODEFAULTLIB:biblioteca
+glew32s.lib(glew.obj) : warning LNK4099: no se encontró PDB 'vc120.pdb' con 'glew32s.lib(glew.obj)' o en 'C:\Users\jrodr\Documents\Geometria-Computacional\Visualizacion\Debug\vc120.pdb'; se vinculará el objeto sin tener en cuenta información de depuración
+  ProjectPrueba.vcxproj -> C:\Users\jrodr\Documents\Geometria-Computacional\Visualizacion\Debug\OpenGL.exe

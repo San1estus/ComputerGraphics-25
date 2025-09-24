@@ -1,0 +1,2 @@
+﻿  Application.cpp
+C:\Users\jrodr\source\repos\Graficas\ProjectPrueba\ProjectPrueba\src\Application.cpp(1,10): error C1083: No se puede abrir el archivo incluir: 'GLFW/glfw3.h': No such file or directory
