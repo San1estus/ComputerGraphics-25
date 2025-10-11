@@ -1,0 +1,3 @@
+C:/Users/jrodr/Documents/GraficasCompu/build/CMakeFiles/ComputerGraphics.dir
+C:/Users/jrodr/Documents/GraficasCompu/build/CMakeFiles/edit_cache.dir
+C:/Users/jrodr/Documents/GraficasCompu/build/CMakeFiles/rebuild_cache.dir
