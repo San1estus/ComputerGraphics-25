@@ -5,9 +5,9 @@ set(CMAKE_CXX_STANDARD 20)
 
 find_package(glfw3 3.3 REQUIRED)
 
-add_executable(ComputerGraphics PruebaOpenGL.cpp)
+add_executable(ComputerGraphics Puppet.cpp)
 
-target_link_libraries(ComputerGraphics glfw)
+target_link_libraries(ComputerGraphics glfw glew32)
 
 if (WIN32)
     target_link_libraries(${PROJECT_NAME} opengl32)
