@@ -15,6 +15,115 @@ const float PI = acos(-1);
 
 using namespace std;
 
+class Renderer{
+    private:
+    unsigned int VAO, VBO, EBO;
+    unsigned int indexCount;
+
+    public:
+    Renderer(const vector<float>& vertices, const vector<unsigned int>& indices):indexCount(indices.size()){
+        glGenVertexArrays(1, &VAO);
+        glGenBuffers(1, &VBO);
+        glGenBuffers(1, &EBO);
+
+        glBindVertexArray(VAO);
+
+        glBindBuffer(GL_ARRAY_BUFFER, VBO);
+        glBufferData(GL_ARRAY_BUFFER, vertices.size()*sizeof(float), vertices.data(), GL_STATIC_DRAW);
+        
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size()*sizeof(unsigned int), indices.data(), GL_STATIC_DRAW);
+        
+        GLsizei stride = 6*sizeof(float);
+
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, stride, (void*)0);
+        glEnableVertexAttribArray(0);
+
+        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, stride, (void*)(3*sizeof(float)));
+        glEnableVertexAttribArray(1);
+
+        glBindVertexArray(0);
+    }
+
+    void draw(unsigned int shaderProgram, const glm::mat4 mvp, const glm::mat4& model, const glm::vec3& color){
+        int mvpLocation = glGetUniformLocation(shaderProgram, "u_MVP"); 
+        int modelLocation = glGetUniformLocation(shaderProgram, "u_Model"); 
+        int colorLocation = glGetUniformLocation(shaderProgram, "u_ObjectColor"); 
+
+        glUniformMatrix4fv(mvpLocation, 1, GL_FALSE, glm::value_ptr(mvp));
+        glUniformMatrix4fv(modelLocation, 1, GL_FALSE, glm::value_ptr(model));
+        glUniform3fv(colorLocation, 1, glm::value_ptr(color));
+
+        glBindVertexArray(VAO);
+        glDrawElements(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, nullptr);
+        glBindVertexArray(0);
+    }
+
+    ~Renderer() {
+        glDeleteBuffers(1, &EBO);
+        glDeleteBuffers(1, &VBO);
+        glDeleteVertexArrays(1, &VAO);
+    }
+};
+
+class Joint{
+    public:
+    vector<Joint*> children;
+    Renderer* renderer;
+    Joint* parent;
+
+    // Esta matriz afecta respecto al padre
+    glm::mat4 localTransform; 
+    string name;
+
+    glm::vec3 position;
+    glm::vec3 rotation;
+    glm::vec3 color;
+
+    Joint(string n, Renderer* bp, glm::vec3 pos, glm::vec3 c) : name(n), renderer(bp), parent(nullptr), position(pos), rotation(glm::vec3(0.0f)), color(c){
+        localTransform = glm::mat4(1.0f);
+        updateLocalTransform();
+    }
+
+    void addChild(Joint* child){
+        child->parent = this;   
+        children.push_back(child);
+    }
+
+    ~Joint(){
+        for(Joint* child :  children){
+            delete child;
+        }
+    }
+    void updateLocalTransform() {
+        glm::mat4 rotationMatrix = glm::mat4(1.0f);
+        rotationMatrix = glm::rotate(rotationMatrix, rotation.x, glm::vec3(1.0f, 0.0f, 0.0f)); // Pitch (X)
+        rotationMatrix = glm::rotate(rotationMatrix, rotation.y, glm::vec3(0.0f, 1.0f, 0.0f)); // Yaw (Y)
+        rotationMatrix = glm::rotate(rotationMatrix, rotation.z, glm::vec3(0.0f, 0.0f, 1.0f)); // Roll (Z)
+
+        // Aplicar la Traslación * Rotación (TR)
+
+        localTransform = glm::translate(glm::mat4(1.0f), position) * rotationMatrix;
+    }
+};
+
+void drawJoint(Joint* joint, const glm::mat4& parentTransform, const glm::mat4& view, const glm::mat4& proj, unsigned int shaderProgram){
+    if(!joint) return;
+    
+    joint -> updateLocalTransform();
+    
+    glm::mat4 globalTransform =  parentTransform * joint->localTransform;
+
+    if(joint -> renderer){
+        glm::mat4 mvp = proj * view * globalTransform;
+        joint->renderer->draw(shaderProgram, mvp, globalTransform, joint->color);
+    }
+
+    for(Joint* child : joint->children){
+        drawJoint(child, globalTransform, view, proj, shaderProgram);
+    }
+}
+
 class Sphere{
     public:
     vector<float> vertices;
@@ -47,8 +156,6 @@ class Sphere{
                 vertices.pb(xPos);
                 vertices.pb(yPos);
                 vertices.pb(zPos);
-                
-
             }
         }
         
@@ -130,7 +237,6 @@ static unsigned  int CreateShader(const string& vertexShader, string& fragmentSh
 	return program;
 }
 
-
 int main(void)
 {
     GLFWwindow* window;
@@ -140,7 +246,7 @@ int main(void)
         return -1;
     
     /* Create a windowed mode window and its OpenGL context */
-    window = glfwCreateWindow(640, 480, "The Puppet", NULL, NULL);
+    window = glfwCreateWindow(1920, 1080, "The Puppet", NULL, NULL);
     if (!window)
     {
         glfwTerminate();
@@ -162,41 +268,18 @@ int main(void)
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
 
+    Sphere torsoObj(0.6f, 36, 18);
+    Sphere headObj(0.3f, 18, 9);
 
-    Sphere sphere(1.0f, 36, 18); // Generación de la esfera
-    
-    unsigned int VAO, VBO, EBO;
-    
-    // Generar y Vincular VAO 
-    glGenVertexArrays(1, &VAO);
-    glBindVertexArray(VAO);
+    Renderer* torsoRenderer  = new Renderer(torsoObj.vertices, torsoObj.indices);
+    Renderer* headRenderer  = new Renderer(headObj.vertices, headObj.indices);
 
-    // VBO 
-    glGenBuffers(1, &VBO);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sphere.vertices.size() * sizeof(float), sphere.vertices.data(), GL_STATIC_DRAW);
+    Joint* torso = new Joint("Torso", torsoRenderer, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.1f, 0.5f, 0.9f));
 
-    // Index Buffer
-    glGenBuffers(1, &EBO);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sphere.indices.size() * sizeof(unsigned int), sphere.indices.data(), GL_STATIC_DRAW);
-
-    // Stride = 6 * sizeof(float) (3 Posición + 3 Normal)
-    GLsizei stride = 6 * sizeof(float);
-
-    // Iluminacion
-
-    // Atributo 0: Posición (Offset 0)
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, stride, (void*)0);
-    glEnableVertexAttribArray(0);
-    
-    // Atributo 1: Normal (Offset 3 * sizeof(float))
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, stride, (void*)(3 * sizeof(float)));
-    glEnableVertexAttribArray(1);
-
-    // Desvincular VAO
-    glBindVertexArray(0);
-
+    Joint* cuello = new Joint("Cuello", nullptr, glm::vec3(0.0f, 0.6f, 0.0f), glm::vec3(0.0f));
+    torso->addChild(cuello);
+    Joint* cabeza = new Joint("Cabeza", headRenderer, glm::vec3(0.0f, 0.3f, 0.0f), glm::vec3(0.9f, 0.2f, 0.2f));
+    cuello->addChild(cabeza);
 
     ifstream streamvertex("res/shaders/vertex.vs");
     stringstream ssvertex;
@@ -215,7 +298,7 @@ int main(void)
 
 
     // --- Configuración Inicial de Matrices y Luz ---
-    glm::mat4 Proj = glm::perspective(glm::radians(45.0f), 640.0f / 480.0f, 0.1f, 100.0f);
+    glm::mat4 Proj = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
     glm::mat4 View = glm::lookAt(
         glm::vec3(0.0f, 0.0f, 3.0f), // Cámara
         glm::vec3(0.0f, 0.0f, 0.0f), 
@@ -224,60 +307,44 @@ int main(void)
     
     glm::vec3 lightPos(1.2f, 1.0f, 2.0f); 
     glm::vec3 viewPos(0.0f, 0.0f, 3.0f);  
-    glm::vec3 objectColor(0.1f, 0.5f, 0.9f); // Color azul
-
-    // Obtener ubicaciones de uniformes
-    int mvpLocation = glGetUniformLocation(shader, "u_MVP");
-    int modelLocation = glGetUniformLocation(shader, "u_Model");
+    
     int lightPosLocation = glGetUniformLocation(shader, "u_LightPos");
     int viewPosLocation = glGetUniformLocation(shader, "u_ViewPos");
-    int colorLocation = glGetUniformLocation(shader, "u_ObjectColor");
 
-    // Asignar uniformes estáticos de LUZ y CÁMARA (solo una vez)
     glUniform3fv(lightPosLocation, 1, glm::value_ptr(lightPos));
     glUniform3fv(viewPosLocation, 1, glm::value_ptr(viewPos));
-    glUniform3fv(colorLocation, 1, glm::value_ptr(objectColor));
 
-    float rotation = 0.0f;
+    float time = 0.0f;
     double lastTime = glfwGetTime();
-
     while (!glfwWindowShouldClose(window))
     {
         // Calcular delta time para rotación suave
         double currentTime = glfwGetTime();
         float deltaTime = (float)(currentTime - lastTime);
         lastTime = currentTime;
+        time+= deltaTime;
 
-        // Rotación continua para ver la geometría
-        rotation += 50.0f * deltaTime; // 50 grados por segundo
-        glm::mat4 Model = glm::rotate(glm::mat4(1.0f), glm::radians(rotation), glm::vec3(0.0f, 1.0f, 0.0f));
-        glm::mat4 MVP = Proj * View * Model;
-        
+        // Rotación continua para ver que si es esfera
+
+        cuello -> rotation.y = glm::radians(sin(time*1.5f)*45.0f);
+        cabeza -> rotation.x = glm::radians(cos(time*2.0f)*35.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // Limpiar color y profundidad
         
         glUseProgram(shader);
         
-        // Asignar uniformes dinámicos
-        glUniformMatrix4fv(mvpLocation, 1, GL_FALSE, glm::value_ptr(MVP)); 
-        glUniformMatrix4fv(modelLocation, 1, GL_FALSE, glm::value_ptr(Model));
-        
-        // ** VINCULAR VAO ANTES DE DIBUJAR **
-        glBindVertexArray(VAO);
-        
-        glDrawElements(GL_TRIANGLES, sphere.indices.size(), GL_UNSIGNED_INT, nullptr);
-        
-        // No es necesario desvincular el VAO aquí, pero sí es buena práctica al final del frame.
-        // Lo dejamos vinculado mientras se dibuja.
+        glm::mat4 globalModelMatrix = glm::mat4(1.0f); 
 
+        // Iniciar el dibujado recursivo
+        drawJoint(torso, globalModelMatrix, View, Proj, shader);
+        
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
     
-    // Limpieza...
-    glDeleteVertexArrays(1, &VAO);
-    glDeleteBuffers(1, &VBO);
-    glDeleteBuffers(1, &EBO);
-    glDeleteProgram(shader);
+    // Limpieza
+    delete torso;
+    delete torsoRenderer;
+    delete headRenderer;
 
     glfwTerminate();
     return 0;

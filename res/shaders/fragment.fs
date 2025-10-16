@@ -19,7 +19,6 @@ void main()
     float diff = max(dot(norm, lightDir), 0.0);
     vec3 diffuse = diff * u_ObjectColor;
 
-    // 3. Iluminación Especular (Brillo, ignorada por simplicidad, pero se puede añadir)
 
     // 4. Color Final
     vec3 result = (ambient + diffuse);
