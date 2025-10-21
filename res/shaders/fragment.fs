@@ -10,7 +10,7 @@ uniform vec3 u_ObjectColor; // Color base de la esfera
 void main()
 {
     // 1. Iluminación Ambiental (Siempre hay un poco de luz)
-    float ambientStrength = 0.1f;
+    float ambientStrength = 0.5f;
     vec3 ambient = ambientStrength * u_ObjectColor;
 
     // 2. Iluminación Difusa (Cálculo de la luz directa)

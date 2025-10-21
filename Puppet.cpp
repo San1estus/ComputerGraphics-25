@@ -15,13 +15,31 @@ const float PI = acos(-1);
 
 using namespace std;
 
+class Joint;
+
+// Iniciar con pantalla centrada
+float lastX = 960;
+float lastY = 540;
+float yaw = -90.0, roll, pitch, fov = 45.0;
+
+
+Joint* selectedJoint = nullptr;
+std::vector<Joint*> jointList;
+
+glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
+glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
+glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
+
+const float MOUSE_SENSITIVITY = 0.1f;
+bool firstMouse = true;
+
 class Renderer{
     private:
     unsigned int VAO, VBO, EBO;
     unsigned int indexCount;
 
     public:
-    Renderer(const vector<float>& vertices, const vector<unsigned int>& indices):indexCount(indices.size()){
+    Renderer(const vector<float> vertices, const vector<unsigned int> indices):indexCount(indices.size()){
         glGenVertexArrays(1, &VAO);
         glGenBuffers(1, &VBO);
         glGenBuffers(1, &EBO);
@@ -66,22 +84,33 @@ class Renderer{
     }
 };
 
+
 class Joint{
     public:
     vector<Joint*> children;
     Renderer* renderer;
     Joint* parent;
 
-    // Esta matriz afecta respecto al padre
+    // Esta matriz afecta respecto al padre (T*R*S)
+    // Se usará SOLO para renderizar este joint
     glm::mat4 localTransform; 
+
+    // Esta matriz se pasará a los hijos (T*R)
+    // NO incluye la escala de este joint
+    glm::mat4 hierarchyTransform; 
+
     string name;
 
     glm::vec3 position;
     glm::vec3 rotation;
+    glm::vec3 scale;
     glm::vec3 color;
 
-    Joint(string n, Renderer* bp, glm::vec3 pos, glm::vec3 c) : name(n), renderer(bp), parent(nullptr), position(pos), rotation(glm::vec3(0.0f)), color(c){
+    // El constructor no cambia
+    Joint(string n, Renderer* bp, glm::vec3 pos, glm::vec3 c, glm::vec3 s = glm::vec3(1.0f))
+    : name(n), renderer(bp), parent(nullptr), position(pos), rotation(glm::vec3(0.0f)), color(c), scale(s){
         localTransform = glm::mat4(1.0f);
+        hierarchyTransform = glm::mat4(1.0f); // Inicializar la nueva matriz
         updateLocalTransform();
     }
 
@@ -95,32 +124,45 @@ class Joint{
             delete child;
         }
     }
+
     void updateLocalTransform() {
         glm::mat4 rotationMatrix = glm::mat4(1.0f);
         rotationMatrix = glm::rotate(rotationMatrix, rotation.x, glm::vec3(1.0f, 0.0f, 0.0f)); // Pitch (X)
         rotationMatrix = glm::rotate(rotationMatrix, rotation.y, glm::vec3(0.0f, 1.0f, 0.0f)); // Yaw (Y)
         rotationMatrix = glm::rotate(rotationMatrix, rotation.z, glm::vec3(0.0f, 0.0f, 1.0f)); // Roll (Z)
 
-        // Aplicar la Traslación * Rotación (TR)
+        hierarchyTransform = glm::translate(glm::mat4(1.0f), position) * rotationMatrix;
 
-        localTransform = glm::translate(glm::mat4(1.0f), position) * rotationMatrix;
+        glm::mat4 scaleMatrix = glm::scale(glm::mat4(1.0f), scale);
+        localTransform = hierarchyTransform * scaleMatrix; // T * R * S
     }
 };
 
-void drawJoint(Joint* joint, const glm::mat4& parentTransform, const glm::mat4& view, const glm::mat4& proj, unsigned int shaderProgram){
+// Cambiamos el nombre del parámetro para mayor claridad
+void drawJoint(Joint* joint, const glm::mat4& parentHierarchyTransform, const glm::mat4& view, const glm::mat4& proj, unsigned int shaderProgram){
     if(!joint) return;
     
+    // Calcula T*R (para hijos) y T*R*S (para render) locales
     joint -> updateLocalTransform();
     
-    glm::mat4 globalTransform =  parentTransform * joint->localTransform;
+    // 1. Transformación GLOBAL para los hijos (T*R acumulado)
+    // (Parent_T*R) * (Joint_T*R)
+    glm::mat4 globalHierarchyTransform = parentHierarchyTransform * joint->hierarchyTransform;
+
+    // 2. Transformación GLOBAL para renderizar (T*R*S acumulado)
+    // (Parent_T*R) * (Joint_T*R*S)
+    glm::mat4 globalRenderTransform = parentHierarchyTransform * joint->localTransform;
+
 
     if(joint -> renderer){
-        glm::mat4 mvp = proj * view * globalTransform;
-        joint->renderer->draw(shaderProgram, mvp, globalTransform, joint->color);
+        // Usamos la globalRenderTransform (con escala) para dibujar
+        glm::mat4 mvp = proj * view * globalRenderTransform;
+        joint->renderer->draw(shaderProgram, mvp, globalRenderTransform, joint->color);
     }
 
     for(Joint* child : joint->children){
-        drawJoint(child, globalTransform, view, proj, shaderProgram);
+        // Pasamos la globalHierarchyTransform (sin escala) a los hijos
+        drawJoint(child, globalHierarchyTransform, view, proj, shaderProgram);
     }
 }
 
@@ -237,6 +279,97 @@ static unsigned  int CreateShader(const string& vertexShader, string& fragmentSh
 	return program;
 }
 
+void processInput(GLFWwindow* window, float rotationSpeed, float deltaTime){
+    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS){
+        glfwSetWindowShouldClose(window, GL_TRUE);
+    }
+    
+    // Movimiento camara con WASD
+    const float cameraSpeed = 0.01f;
+    if(glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS){
+        cameraPos += cameraSpeed * cameraFront;
+    }
+    if(glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS){
+        cameraPos -= cameraSpeed * cameraFront;
+    }
+    if(glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS){
+        cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp))* cameraSpeed;
+    }
+    if(glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS){
+        cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp))* cameraSpeed;
+    }
+
+    // Movimiento articulaciones con flechitas
+    if(selectedJoint){
+        if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS){
+            selectedJoint->rotation.x +=rotationSpeed;
+        }
+        if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS){
+            selectedJoint->rotation.x -=rotationSpeed;
+        }
+        if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS){
+            selectedJoint->rotation.y +=rotationSpeed;
+        }
+        if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS){
+            selectedJoint->rotation.y -=rotationSpeed;
+        }
+    }
+}
+
+void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods){
+    if(action == GLFW_PRESS){
+        if(key >= GLFW_KEY_1 && key <=GLFW_KEY_9){
+            int index = key - GLFW_KEY_1;
+            if(index < jointList.size()){
+                selectedJoint = jointList[index];
+                cout << "Articulacion actual: " << selectedJoint->name << '\n';
+            }
+        }
+    }
+}
+
+void mouseCallback(GLFWwindow* window, double xpos, double ypos){
+
+    if(firstMouse){
+        lastX = xpos;
+        lastY = ypos;
+        firstMouse = false;
+    }
+
+    float xoffset = xpos - lastX;
+    float yoffset = lastY - ypos;
+    lastX = xpos;
+    lastY = ypos;
+
+    yoffset *= MOUSE_SENSITIVITY;
+    xoffset *= MOUSE_SENSITIVITY;
+
+    yaw+= xoffset;
+    pitch += yoffset;
+
+    if(pitch > 89.0f){
+        pitch = 89.0f;
+    }
+    if(pitch < -89.0f){
+        pitch = -89.0f;
+    }
+    glm::vec3 direction;
+    direction.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
+    direction.y = sin(glm::radians(pitch));
+    direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
+    cameraFront = glm::normalize(direction);
+}
+
+void scrollCallback(GLFWwindow* window, double xoffset, double yoffset){
+    fov -= (float)yoffset;
+    if(fov < 1.0f){
+        fov  = 1.0f;
+    }
+    if(fov > 90.0f){
+        fov = 90.0f;
+    }
+}
+
 int main(void)
 {
     GLFWwindow* window;
@@ -268,19 +401,43 @@ int main(void)
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
 
-    Sphere torsoObj(0.6f, 36, 18);
-    Sphere headObj(0.3f, 18, 9);
+    Sphere base(0.5f, 36, 18);
 
-    Renderer* torsoRenderer  = new Renderer(torsoObj.vertices, torsoObj.indices);
-    Renderer* headRenderer  = new Renderer(headObj.vertices, headObj.indices);
+    glfwSetKeyCallback(window, keyCallback);
+    glfwSetCursorPosCallback(window, mouseCallback);
+    glfwSetScrollCallback(window, scrollCallback);
 
-    Joint* torso = new Joint("Torso", torsoRenderer, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.1f, 0.5f, 0.9f));
+    Renderer* renderer  = new Renderer(base.vertices, base.indices);
+    // Creación de la marioneta
 
-    Joint* cuello = new Joint("Cuello", nullptr, glm::vec3(0.0f, 0.6f, 0.0f), glm::vec3(0.0f));
+    Joint* torso = new Joint("Torso", renderer, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.1f, 0.5f, 0.9f), glm::vec3(1.0f, 1.5f, 0.5f));
+    
+    Joint* cuello = new Joint("Cuello", nullptr, glm::vec3(0.0f, 0.85f, 0.0f), glm::vec3(0.0f));
     torso->addChild(cuello);
-    Joint* cabeza = new Joint("Cabeza", headRenderer, glm::vec3(0.0f, 0.3f, 0.0f), glm::vec3(0.9f, 0.2f, 0.2f));
+    Joint* cabeza = new Joint("Cabeza", renderer, glm::vec3(0.0f, 0.3f, 0.0f), glm::vec3(0.9f, 0.7f, 0.6f), glm::vec3(0.8f, 0.8f, 0.8f));
     cuello->addChild(cabeza);
 
+    Joint* hombroIzq = new Joint("Hombro Izquierdo", nullptr, glm::vec3(-0.6f, 0.6f, 0.0f), glm::vec3(0.0f));
+    hombroIzq->rotation.z = glm::radians(90.0f); // Posición T
+    torso->addChild(hombroIzq);
+    Joint* bicepIzq = new Joint("Bicep Izquierdo", renderer, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.9f, 0.7f, 0.6f), glm::vec3(0.3f, 0.8f, 0.3f));
+    hombroIzq->addChild(bicepIzq);
+
+    Joint* hombroDer = new Joint("Hombro Derecho", nullptr, glm::vec3(0.6f, 0.6f, 0.0f), glm::vec3(0.0f));
+    hombroDer->rotation.z = glm::radians(-90.0f); // Posición T
+    torso->addChild(hombroDer);
+    Joint* bicepDer = new Joint("Bicep Derecho", renderer, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.9f, 0.7f, 0.6f), glm::vec3(0.3f, 0.8f, 0.3f));
+    hombroDer->addChild(bicepDer);
+
+    // Arreglo para seleccion de articulacion
+    jointList.pb(torso);      // 1
+    jointList.pb(cabeza);     // 2
+    jointList.pb(hombroIzq);  // 3
+    jointList.pb(hombroDer);  // 4
+
+    selectedJoint = jointList[0];
+
+    // Carga de shaders
     ifstream streamvertex("res/shaders/vertex.vs");
     stringstream ssvertex;
     ssvertex << streamvertex.rdbuf();
@@ -298,40 +455,36 @@ int main(void)
 
 
     // --- Configuración Inicial de Matrices y Luz ---
-    glm::mat4 Proj = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
-    glm::mat4 View = glm::lookAt(
-        glm::vec3(0.0f, 0.0f, 3.0f), // Cámara
-        glm::vec3(0.0f, 0.0f, 0.0f), 
-        glm::vec3(0.0f, 1.0f, 0.0f)
-    );
     
-    glm::vec3 lightPos(1.2f, 1.0f, 2.0f); 
-    glm::vec3 viewPos(0.0f, 0.0f, 3.0f);  
+    glm::vec3 lightPos(0.0f, 1.0f, 3.0f); 
     
     int lightPosLocation = glGetUniformLocation(shader, "u_LightPos");
     int viewPosLocation = glGetUniformLocation(shader, "u_ViewPos");
 
     glUniform3fv(lightPosLocation, 1, glm::value_ptr(lightPos));
-    glUniform3fv(viewPosLocation, 1, glm::value_ptr(viewPos));
+    
+    float rotationSpeed = glm::radians(0.3f);
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
-    float time = 0.0f;
-    double lastTime = glfwGetTime();
+    float lastFrame = 0.0f;
     while (!glfwWindowShouldClose(window))
     {
-        // Calcular delta time para rotación suave
-        double currentTime = glfwGetTime();
-        float deltaTime = (float)(currentTime - lastTime);
-        lastTime = currentTime;
-        time+= deltaTime;
+        float currentFrame = glfwGetTime();
+        float deltaTime = currentFrame - lastFrame;
 
-        // Rotación continua para ver que si es esfera
-
-        cuello -> rotation.y = glm::radians(sin(time*1.5f)*45.0f);
-        cabeza -> rotation.x = glm::radians(cos(time*2.0f)*35.0f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // Limpiar color y profundidad
+        processInput(window, rotationSpeed, deltaTime);
+        
+        glm::mat4 Proj = glm::perspective(glm::radians(fov), 800.0f / 600.0f, 0.1f, 100.0f);
+        glm::mat4 View = glm::lookAt(cameraPos, cameraPos+cameraFront, cameraUp);
         
         glUseProgram(shader);
         
+        glUniform3fv(viewPosLocation, 1, glm::value_ptr(cameraPos));
+        
+        
+        glClearColor(0.85f, 0.85f, 0.85f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); 
+
         glm::mat4 globalModelMatrix = glm::mat4(1.0f); 
 
         // Iniciar el dibujado recursivo
@@ -343,8 +496,7 @@ int main(void)
     
     // Limpieza
     delete torso;
-    delete torsoRenderer;
-    delete headRenderer;
+    delete renderer;
 
     glfwTerminate();
     return 0;
