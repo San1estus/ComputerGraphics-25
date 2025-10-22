@@ -15,6 +15,20 @@ const float PI = acos(-1);
 
 using namespace std;
 
+/*
+TODO: restricciones de movimiento, pila para hacer y deshacer
+OPCIONAL: añadir texturas (cara), cambiar iluminacion.
+*/
+
+enum JointType{
+    HOMBRO,
+    CODO,
+    MUNECA,
+    CADERA,
+    RODILLA,
+    TOBILLO
+};
+
 class Joint;
 
 // Iniciar con pantalla centrada
@@ -26,7 +40,7 @@ float yaw = -90.0, roll, pitch, fov = 45.0;
 Joint* selectedJoint = nullptr;
 std::vector<Joint*> jointList;
 
-glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
+glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 5.0f);
 glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
@@ -97,7 +111,7 @@ class Joint{
 
     // Esta matriz se pasará a los hijos (T*R)
     // NO incluye la escala de este joint
-    glm::mat4 hierarchyTransform; 
+    glm::mat4 hierarchyTransform ; 
 
     string name;
 
@@ -127,9 +141,10 @@ class Joint{
 
     void updateLocalTransform() {
         glm::mat4 rotationMatrix = glm::mat4(1.0f);
+
+        rotationMatrix = glm::rotate(rotationMatrix, rotation.z, glm::vec3(0.0f, 0.0f, 1.0f)); // Roll (Z)
         rotationMatrix = glm::rotate(rotationMatrix, rotation.x, glm::vec3(1.0f, 0.0f, 0.0f)); // Pitch (X)
         rotationMatrix = glm::rotate(rotationMatrix, rotation.y, glm::vec3(0.0f, 1.0f, 0.0f)); // Yaw (Y)
-        rotationMatrix = glm::rotate(rotationMatrix, rotation.z, glm::vec3(0.0f, 0.0f, 1.0f)); // Roll (Z)
 
         hierarchyTransform = glm::translate(glm::mat4(1.0f), position) * rotationMatrix;
 
@@ -313,14 +328,33 @@ void processInput(GLFWwindow* window, float rotationSpeed, float deltaTime){
         if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS){
             selectedJoint->rotation.y -=rotationSpeed;
         }
+        if (glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS){
+            selectedJoint->rotation.z +=rotationSpeed;
+        }
+        if (glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS){
+            selectedJoint->rotation.z -=rotationSpeed;
+        }
     }
 }
 
+bool derecho = false;
+
 void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods){
     if(action == GLFW_PRESS){
-        if(key >= GLFW_KEY_1 && key <=GLFW_KEY_9){
-            int index = key - GLFW_KEY_1;
-            if(index < jointList.size()){
+        if(key >= GLFW_KEY_0 && key <=GLFW_KEY_7){
+            int index = key - GLFW_KEY_0;
+            if(selectedJoint->name == jointList[index]->name){
+                derecho = !derecho;
+            }
+            else{
+                derecho = false;
+            }
+
+            if(index > 1){
+                index += 6*derecho;
+            }
+            
+            if(index < jointList.size()){ 
                 selectedJoint = jointList[index];
                 cout << "Articulacion actual: " << selectedJoint->name << '\n';
             }
@@ -409,7 +443,7 @@ int main(void)
 
     Renderer* renderer  = new Renderer(base.vertices, base.indices);
     // Creación de la marioneta
-
+    // Torso y cabeza
     Joint* torso = new Joint("Torso", renderer, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.1f, 0.5f, 0.9f), glm::vec3(1.0f, 1.5f, 0.5f));
     
     Joint* cuello = new Joint("Cuello", nullptr, glm::vec3(0.0f, 0.85f, 0.0f), glm::vec3(0.0f));
@@ -417,23 +451,89 @@ int main(void)
     Joint* cabeza = new Joint("Cabeza", renderer, glm::vec3(0.0f, 0.3f, 0.0f), glm::vec3(0.9f, 0.7f, 0.6f), glm::vec3(0.8f, 0.8f, 0.8f));
     cuello->addChild(cabeza);
 
-    Joint* hombroIzq = new Joint("Hombro Izquierdo", nullptr, glm::vec3(-0.6f, 0.6f, 0.0f), glm::vec3(0.0f));
-    hombroIzq->rotation.z = glm::radians(90.0f); // Posición T
+    // Brazos (bicep)
+    Joint* hombroIzq = new Joint("Hombro Izquierdo", nullptr, glm::vec3(-0.2f, 0.6f, 0.0f), glm::vec3(0.0f));
     torso->addChild(hombroIzq);
-    Joint* bicepIzq = new Joint("Bicep Izquierdo", renderer, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.9f, 0.7f, 0.6f), glm::vec3(0.3f, 0.8f, 0.3f));
+    Joint* bicepIzq = new Joint("Bicep Izquierdo", renderer, glm::vec3(-0.4f, 0.0f, 0.0f), glm::vec3(0.9f, 0.7f, 0.6f), glm::vec3(0.8f, 0.3f, 0.3f));
     hombroIzq->addChild(bicepIzq);
 
-    Joint* hombroDer = new Joint("Hombro Derecho", nullptr, glm::vec3(0.6f, 0.6f, 0.0f), glm::vec3(0.0f));
-    hombroDer->rotation.z = glm::radians(-90.0f); // Posición T
+    Joint* hombroDer = new Joint("Hombro Derecho", nullptr, glm::vec3(0.2f, 0.6f, 0.0f), glm::vec3(0.0f));
     torso->addChild(hombroDer);
-    Joint* bicepDer = new Joint("Bicep Derecho", renderer, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.9f, 0.7f, 0.6f), glm::vec3(0.3f, 0.8f, 0.3f));
+    Joint* bicepDer = new Joint("Bicep Derecho", renderer, glm::vec3(0.4f, 0.0f, 0.0f), glm::vec3(0.9f, 0.7f, 0.6f), glm::vec3(0.8f, 0.3f, 0.3f));
     hombroDer->addChild(bicepDer);
 
+    // Brazos (antebrazo)
+    Joint* codoIzq = new Joint("Codo Izquierdo", nullptr, glm::vec3(-0.3f, 0.0f, 0.0f), glm::vec3(0.0f));
+    bicepIzq->addChild(codoIzq);
+    Joint* antebrazoIzq = new Joint("Antebrazo Izquierdo", renderer, glm::vec3(-0.4f, 0.0f, 0.0f), glm::vec3(0.9f, 0.7f, 0.6f), glm::vec3(0.8f, 0.3f, 0.3f));
+    codoIzq->addChild(antebrazoIzq);
+
+    Joint* codoDer = new Joint("Codo Derecho", nullptr, glm::vec3(0.3f, 0.0f, 0.0f), glm::vec3(0.0f));
+    bicepDer->addChild(codoDer);
+    Joint* antebrazoDer = new Joint("Antebrazo Derecho", renderer, glm::vec3(0.4f, 0.0f, 0.0f), glm::vec3(0.9f, 0.7f, 0.6f), glm::vec3(0.8f, 0.3f, 0.3f));
+    codoDer->addChild(antebrazoDer);
+
+    // Brazos (mano)
+    Joint* munecaIzq = new Joint("Munieca Izquierda", nullptr, glm::vec3(-0.3f, 0.0f, 0.0f), glm::vec3(0.0f));
+    antebrazoIzq->addChild(munecaIzq);
+    Joint* manoIzq = new Joint("Mano Iquierda", renderer, glm::vec3(-0.15f, 0.0f,0.0f), glm::vec3(0.9f, 0.7f, 0.6f), glm::vec3(0.15f));
+    munecaIzq->addChild(manoIzq);
+
+    Joint* munecaDer = new Joint("Munieca Derecha", nullptr, glm::vec3(0.3f, 0.0f, 0.0f), glm::vec3(0.0f));
+    antebrazoDer->addChild(munecaDer);
+    Joint* manoDer = new Joint("Mano Derecha", renderer, glm::vec3(0.15f, 0.0f,0.0f), glm::vec3(0.9f, 0.7f, 0.6f), glm::vec3(0.15f));
+    munecaDer->addChild(manoDer);
+
+    // Piernas (muslos)
+    Joint* caderaIzq = new Joint("Cadera Izquierda", nullptr, glm::vec3(-0.2f, -0.75f, 0.0f), glm::vec3(0.0f));
+    torso->addChild(caderaIzq);
+    Joint* musloIzq = new Joint("Muslo Izquierdo", renderer, glm::vec3(0.0f, -0.3f, 0.0f), glm::vec3(0.9f, 0.7f, 0.6f), glm::vec3(0.35f, 0.8f, 0.35f));
+    caderaIzq->addChild(musloIzq);
+
+    Joint* caderaDer = new Joint("Cadera Derecha", nullptr, glm::vec3(0.2f, -0.75f, 0.0f), glm::vec3(0.0f));
+    torso->addChild(caderaDer);
+    Joint* musloDer = new Joint("Muslo Derecho", renderer, glm::vec3(0.0f, -0.3f, 0.0f), glm::vec3(0.9f, 0.7f, 0.6f), glm::vec3(0.35f, 0.8f, 0.35f));
+    caderaDer->addChild(musloDer);
+
+    // Piernas (parte inferior)
+    Joint* rodillaIzq = new Joint("Rodilla Izquierda", nullptr, glm::vec3(0.0f, -0.4f, 0.0f), glm::vec3(0.0f));
+    musloIzq->addChild(rodillaIzq);
+    Joint* piernaIzq = new Joint("Pierna Izquierda", renderer, glm::vec3(0.0f, -0.4f, 0.0f), glm::vec3(0.9f, 0.7f, 0.6f), glm::vec3(0.35f, 0.8f, 0.35f)); 
+    rodillaIzq->addChild(piernaIzq);
+
+    Joint* rodillaDer = new Joint("Rodilla Derecha", nullptr, glm::vec3(0.0f, -0.4f, 0.0f), glm::vec3(0.0f));
+    musloDer->addChild(rodillaDer);
+    Joint* piernaDer = new Joint("Pierna Derecha", renderer, glm::vec3(0.0f, -0.4f, 0.0f), glm::vec3(0.9f, 0.7f, 0.6f), glm::vec3(0.35f, 0.8f, 0.35f)); 
+    rodillaDer->addChild(piernaDer);
+
+    // Piernas (pie)
+    Joint* tobilloIzq = new Joint("Tobillo Izquierdo", nullptr, glm::vec3(0.0f, -0.25f, 0.0f), glm::vec3(0.0f));
+    piernaIzq->addChild(tobilloIzq);
+    Joint* pieIzq = new Joint("Pie Izquierdo", renderer, glm::vec3(0.0f, -0.2f,0.0f), glm::vec3(0.9f, 0.7f, 0.6f), glm::vec3(0.15f));
+    tobilloIzq->addChild(pieIzq);
+
+    Joint* tobilloDer = new Joint("Tobillo Derecho", nullptr, glm::vec3(0.0f, -0.25f, 0.0f), glm::vec3(0.0f));
+    piernaDer->addChild(tobilloDer);
+    Joint* pieDer = new Joint("Pie Derecho", renderer, glm::vec3(0.0f, -0.2f,0.0f), glm::vec3(0.9f, 0.7f, 0.6f), glm::vec3(0.15f));
+    tobilloDer->addChild(pieDer);
+
+    // TODO: primero todo del lado derecho y luego el lado izquierdo
+
     // Arreglo para seleccion de articulacion
-    jointList.pb(torso);      // 1
-    jointList.pb(cabeza);     // 2
-    jointList.pb(hombroIzq);  // 3
-    jointList.pb(hombroDer);  // 4
+    jointList.pb(torso);      // 0
+    jointList.pb(cabeza);     // 1
+    jointList.pb(hombroIzq);  // 2
+    jointList.pb(codoIzq);    // 3
+    jointList.pb(munecaIzq);  // 4
+    jointList.pb(caderaIzq);  // 5
+    jointList.pb(rodillaIzq); // 6
+    jointList.pb(tobilloIzq); // 7
+    jointList.pb(hombroDer);  // 8
+    jointList.pb(codoDer);    // 9
+    jointList.pb(munecaDer);  // 10
+    jointList.pb(caderaDer);  // 11
+    jointList.pb(rodillaDer); // 12
+    jointList.pb(tobilloDer); // 13
 
     selectedJoint = jointList[0];
 
