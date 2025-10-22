@@ -1,13 +1,13 @@
 cmake_minimum_required(VERSION 3.28)
-project(ComputerGraphics)
+project(Puppet)
 
 set(CMAKE_CXX_STANDARD 20)
 
 find_package(glfw3 3.3 REQUIRED)
 
-add_executable(ComputerGraphics Puppet.cpp)
+add_executable(Puppet Puppet.cpp)
 
-target_link_libraries(ComputerGraphics glfw glew32)
+target_link_libraries(Puppet glfw glew32)
 
 if (WIN32)
     target_link_libraries(${PROJECT_NAME} opengl32)

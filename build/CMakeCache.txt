@@ -110,7 +110,7 @@ CMAKE_FIND_PACKAGE_REDIRECTS_DIR:STATIC=C:/Users/jrodr/Documents/GraficasCompu/b
 CMAKE_GNUtoMS:BOOL=OFF
 
 //Install path prefix, prepended onto install directories.
-CMAKE_INSTALL_PREFIX:PATH=C:/Program Files (x86)/ComputerGraphics
+CMAKE_INSTALL_PREFIX:PATH=C:/Program Files (x86)/Puppet
 
 //Path to a program.
 CMAKE_LINKER:FILEPATH=C:/msys64/ucrt64/bin/ld.exe
@@ -154,7 +154,7 @@ CMAKE_PROJECT_DESCRIPTION:STATIC=
 CMAKE_PROJECT_HOMEPAGE_URL:STATIC=
 
 //Value Computed by CMake
-CMAKE_PROJECT_NAME:STATIC=ComputerGraphics
+CMAKE_PROJECT_NAME:STATIC=Puppet
 
 //Path to a program.
 CMAKE_RANLIB:FILEPATH=C:/msys64/ucrt64/bin/ranlib.exe
@@ -240,13 +240,13 @@ CMAKE_TAPI:FILEPATH=CMAKE_TAPI-NOTFOUND
 CMAKE_VERBOSE_MAKEFILE:BOOL=FALSE
 
 //Value Computed by CMake
-ComputerGraphics_BINARY_DIR:STATIC=C:/Users/jrodr/Documents/GraficasCompu/build
+Puppet_BINARY_DIR:STATIC=C:/Users/jrodr/Documents/GraficasCompu/build
 
 //Value Computed by CMake
-ComputerGraphics_IS_TOP_LEVEL:STATIC=ON
+Puppet_IS_TOP_LEVEL:STATIC=ON
 
 //Value Computed by CMake
-ComputerGraphics_SOURCE_DIR:STATIC=C:/Users/jrodr/Documents/GraficasCompu
+Puppet_SOURCE_DIR:STATIC=C:/Users/jrodr/Documents/GraficasCompu
 
 //The directory containing a CMake configuration file for glfw3.
 glfw3_DIR:PATH=C:/msys64/ucrt64/lib/cmake/glfw3
