@@ -41,3 +41,12 @@ Esta lista se puede actualizar
 * 5 -- Cadera Izquierda/Derecha
 * 6 -- Rodilla Izquierda/Derecha
 * 7 -- Tobillo Izquierdo/Derecho
+
+
+## Referencias utilizadas
+* [learnopengl]{https://learnopengl.com/}
+* [glfw]{https://www.glfw.org/docs/latest/group__input.html}
+
+## Trabajo por hacer
+
+* Automatizar el posicionamiento de los pivotes para poder generalizar el input.
