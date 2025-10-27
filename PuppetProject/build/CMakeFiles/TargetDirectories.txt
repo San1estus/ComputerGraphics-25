@@ -1,0 +1,3 @@
+C:/Users/jrodr/Documents/GraficasCompu/PuppetProject/build/CMakeFiles/Puppet.dir
+C:/Users/jrodr/Documents/GraficasCompu/PuppetProject/build/CMakeFiles/edit_cache.dir
+C:/Users/jrodr/Documents/GraficasCompu/PuppetProject/build/CMakeFiles/rebuild_cache.dir
