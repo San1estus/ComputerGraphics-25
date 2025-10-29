@@ -5,7 +5,7 @@
 class Window{
     private:
     GLFWwindow* window;
-    int width, heigth;
+    int width, height;
     const char* title;
     
     public:
@@ -13,8 +13,11 @@ class Window{
     bool init();
     void swapBuffers();
     void pollEvent();
-    void shouldClose() const;
+    bool shouldClose() const;
     void close();
     void destroy();
-    void isKeyPressed(int key) const;
+    bool isKeyPressed(int key) const;
+    int getWidth(){return width;}
+    int getHeight(){return height;}
+    GLFWwindow* getHandle(){return window;}
 };

@@ -368,7 +368,7 @@ static unsigned int CompileShader(unsigned int type, const string& source){
     return id;
 }
 
-static unsigned  int CreateShader(const string& vertexShader, string& fragmentShader) {
+static unsigned int CreateShader(const string& vertexShader, string& fragmentShader) {
     unsigned int program = glCreateProgram();
     unsigned int vs = CompileShader(GL_VERTEX_SHADER, vertexShader);
     unsigned int fs = CompileShader(GL_FRAGMENT_SHADER, fragmentShader);

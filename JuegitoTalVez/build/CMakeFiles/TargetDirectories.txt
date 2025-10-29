@@ -1,0 +1,3 @@
+C:/Users/jrodr/Documents/GraficasCompu/JuegitoTalVez/build/CMakeFiles/Platformer.dir
+C:/Users/jrodr/Documents/GraficasCompu/JuegitoTalVez/build/CMakeFiles/edit_cache.dir
+C:/Users/jrodr/Documents/GraficasCompu/JuegitoTalVez/build/CMakeFiles/rebuild_cache.dir
