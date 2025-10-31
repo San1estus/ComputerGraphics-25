@@ -84,6 +84,14 @@ build CMakeFiles/Platformer.dir/src/core/Shader.cpp.obj: CXX_COMPILER__Platforme
   OBJECT_DIR = CMakeFiles\Platformer.dir
   OBJECT_FILE_DIR = CMakeFiles\Platformer.dir\src\core
 
+build CMakeFiles/Platformer.dir/src/core/Texture.cpp.obj: CXX_COMPILER__Platformer_unscanned_ C$:/Users/jrodr/Documents/GraficasCompu/JuegitoTalVez/src/core/Texture.cpp || cmake_object_order_depends_target_Platformer
+  DEFINES = -DGLFW_DLL
+  DEP_FILE = CMakeFiles\Platformer.dir\src\core\Texture.cpp.obj.d
+  FLAGS = -std=gnu++17
+  INCLUDES = -IC:/Users/jrodr/Documents/GraficasCompu/JuegitoTalVez/include
+  OBJECT_DIR = CMakeFiles\Platformer.dir
+  OBJECT_FILE_DIR = CMakeFiles\Platformer.dir\src\core
+
 build CMakeFiles/Platformer.dir/src/entities/Player.cpp.obj: CXX_COMPILER__Platformer_unscanned_ C$:/Users/jrodr/Documents/GraficasCompu/JuegitoTalVez/src/entities/Player.cpp || cmake_object_order_depends_target_Platformer
   DEFINES = -DGLFW_DLL
   DEP_FILE = CMakeFiles\Platformer.dir\src\entities\Player.cpp.obj.d
@@ -116,7 +124,7 @@ build CMakeFiles/Platformer.dir/src/entities/Rectangle.cpp.obj: CXX_COMPILER__Pl
 #############################################
 # Link the executable Platformer.exe
 
-build Platformer.exe: CXX_EXECUTABLE_LINKER__Platformer_ CMakeFiles/Platformer.dir/src/main.cpp.obj CMakeFiles/Platformer.dir/src/core/Game.cpp.obj CMakeFiles/Platformer.dir/src/core/Window.cpp.obj CMakeFiles/Platformer.dir/src/core/Renderer.cpp.obj CMakeFiles/Platformer.dir/src/core/Shader.cpp.obj CMakeFiles/Platformer.dir/src/entities/Player.cpp.obj CMakeFiles/Platformer.dir/src/entities/Platform.cpp.obj CMakeFiles/Platformer.dir/src/entities/Rectangle.cpp.obj | C$:/msys64/ucrt64/lib/libglew32.dll.a C$:/msys64/ucrt64/lib/libglfw3.dll.a
+build Platformer.exe: CXX_EXECUTABLE_LINKER__Platformer_ CMakeFiles/Platformer.dir/src/main.cpp.obj CMakeFiles/Platformer.dir/src/core/Game.cpp.obj CMakeFiles/Platformer.dir/src/core/Window.cpp.obj CMakeFiles/Platformer.dir/src/core/Renderer.cpp.obj CMakeFiles/Platformer.dir/src/core/Shader.cpp.obj CMakeFiles/Platformer.dir/src/core/Texture.cpp.obj CMakeFiles/Platformer.dir/src/entities/Player.cpp.obj CMakeFiles/Platformer.dir/src/entities/Platform.cpp.obj CMakeFiles/Platformer.dir/src/entities/Rectangle.cpp.obj | C$:/msys64/ucrt64/lib/libglew32.dll.a C$:/msys64/ucrt64/lib/libglfw3.dll.a
   LINK_LIBRARIES = C:/msys64/ucrt64/lib/libglew32.dll.a  -lopengl32  C:/msys64/ucrt64/lib/libglfw3.dll.a  -lopengl32  -lglu32  -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32
   OBJECT_DIR = CMakeFiles\Platformer.dir
   POST_BUILD = cd .

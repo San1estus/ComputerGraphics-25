@@ -7,6 +7,7 @@
 #include "entities/Player.h"
 #include "entities/Platform.h"
 #include <vector>
+#include <memory>
 
 class Game{
     private:
@@ -14,12 +15,15 @@ class Game{
     Window window;
     Renderer renderer;
     Shader shader;
-    Player player;
+    std::unique_ptr<Player> player;
 
     glm::mat4 projectionView;
 
     std::vector<Platform> platforms;
     
+    std::unique_ptr<Texture> PlayerTex;
+    std::unique_ptr<Texture> PlatformTex;
+
     float deltaTime = 0.0f;
     float lastFrame = 0.0f;
 

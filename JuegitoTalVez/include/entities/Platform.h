@@ -7,6 +7,6 @@
 
 class Platform : public Rectangle{
     public:
-    Platform(const glm::vec2& pos, const glm::vec2& sz);
+    Platform(const glm::vec2& pos, const glm::vec2& sz, Texture* texture);
     bool checkCollision(const glm::vec2& position, const glm::vec2& size);
 };

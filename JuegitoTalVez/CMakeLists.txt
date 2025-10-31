@@ -26,7 +26,8 @@ set(SOURCES
     src/core/Game.cpp
     src/core/Window.cpp
     src/core/Renderer.cpp
-    src/core/Shader.cpp       # Asumo que tienes este
+    src/core/Shader.cpp       
+    src/core/Texture.cpp       
     src/entities/Player.cpp
     src/entities/Platform.cpp
     src/entities/Rectangle.cpp

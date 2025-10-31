@@ -1,6 +1,6 @@
 #include "entities/Platform.h"
 
-Platform::Platform(const glm::vec2& pos, const glm::vec2& sz): Rectangle(pos, sz, glm::vec2(0.0f), glm::vec3(1.0f,0.0f,0.0f)){}
+Platform::Platform(const glm::vec2& pos, const glm::vec2& sz, Texture* texture): Rectangle(pos, sz, glm::vec2(0.0f), texture){}
 
 bool Platform::checkCollision(const glm::vec2& playerPos, const glm::vec2& playerSize){
     bool collisionX = playerPos.x + playerSize.x >= position.x &&

@@ -10,7 +10,7 @@ class Player : public Rectangle{
 
     public:
 
-    Player(const glm::vec2& pos,const glm::vec2& size);
+    Player(const glm::vec2& pos,const glm::vec2& size, Texture* texture);
     void handleInput(const class Window& window);
     void update(float dt, const std::vector<Platform> platforms);
 };

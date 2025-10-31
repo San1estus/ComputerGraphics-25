@@ -4,17 +4,17 @@
 
 Renderer::Renderer() : VAO(0), VBO(0), EBO(0), indexCount(0) {};
 void Renderer::init(){
-    const float vertices[] = {
-        1.0f, 1.0f, 0.0f, 
-        1.0f, 0.0f, 0.0f, 
-        0.0f, 0.0f, 0.0f, 
-        0.0f, 1.0f, 0.0f  
-    };
+    static const float vertices[]{
+    0.3f, 0.3f, 0.0f, 0.3f, 0.3f,
+    0.3f, 0.0f, 0.0f, 0.3f, 0.0f,
+    0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+    0.0f, 0.3f, 0.0f, 0.0f, 0.3f
+};
 
-    const unsigned int indices[] = {
-        0, 1, 3, // primer triángulo
-        1, 2, 3  // segundo triángulo
-    };
+static const unsigned int indices[]{
+    0, 1, 3, 
+    1, 2, 3
+};
     
     indexCount = 6;
     glGenVertexArrays(1, &VAO);
@@ -34,14 +34,12 @@ void Renderer::init(){
 
     glBindVertexArray(0);
 }
-void Renderer::draw(unsigned int shaderProgram, const glm::mat4& mvp, const glm::mat4& model, const glm::vec3& color){
+void Renderer::draw(unsigned int shaderProgram, const glm::mat4& mvp, const glm::mat4& model){
     int mvpLocation = glGetUniformLocation(shaderProgram, "u_MVP"); 
     int modelLocation = glGetUniformLocation(shaderProgram, "u_Model"); 
-    int colorLocation = glGetUniformLocation(shaderProgram, "u_ObjectColor"); 
 
     glUniformMatrix4fv(mvpLocation, 1, GL_FALSE, glm::value_ptr(mvp));
     glUniformMatrix4fv(modelLocation, 1, GL_FALSE, glm::value_ptr(model));
-    glUniform3fv(colorLocation, 1, glm::value_ptr(color));
 
     glBindVertexArray(VAO);
     glDrawElements(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, nullptr);
