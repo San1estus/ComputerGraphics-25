@@ -126,7 +126,10 @@
             "c:\\program files (x86)\\windows kits\\10\\include\\10.0.26100.0\\ucrt\\ctype.h",
             "c:\\program files\\microsoft visual studio\\2022\\community\\vc\\tools\\msvc\\14.44.35207\\include\\clocale",
             "c:\\program files (x86)\\windows kits\\10\\include\\10.0.26100.0\\ucrt\\locale.h",
-            "c:\\program files\\microsoft visual studio\\2022\\community\\vc\\tools\\msvc\\14.44.35207\\include\\ostream"
+            "c:\\program files\\microsoft visual studio\\2022\\community\\vc\\tools\\msvc\\14.44.35207\\include\\ostream",
+            "c:\\users\\jrodr\\documents\\graficascompu\\raycastproject\\ray.hpp",
+            "c:\\users\\jrodr\\documents\\graficascompu\\raycastproject\\vec3.hpp",
+            "c:\\users\\jrodr\\documents\\graficascompu\\raycastproject\\color.hpp"
         ],
         "ImportedModules": [],
         "ImportedHeaderUnits": []
