@@ -1,0 +1,14 @@
+{
+    "version": 1,
+    "revision": 0,
+    "rules": [
+        {
+            "primary-output": "RayCast.dir\\Debug\\RayCast.obj",
+            "outputs": [
+                "C:\\Users\\jrodr\\Documents\\GraficasCompu\\RayCastProject\\build\\RayCast.dir\\Debug\\vc143.pdb",
+                "RayCast.dir\\Debug\\"
+            ],
+            "requires": []
+        }
+    ]
+}

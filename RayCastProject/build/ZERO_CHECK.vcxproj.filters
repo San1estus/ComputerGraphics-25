@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\jrodr\Documents\GraficasCompu\RayCastProject\build\CMakeFiles\39e1bbf283ad2e02bb4e318f421ab413\generate.stamp.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{82B725A5-D53D-3521-88BF-BF684254F887}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
