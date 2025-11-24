@@ -1,3 +1,0 @@
-C:/Users/jrodr/Documents/GraficasCompu/RayCastProject/build/CMakeFiles/RayCast.dir
-C:/Users/jrodr/Documents/GraficasCompu/RayCastProject/build/CMakeFiles/ALL_BUILD.dir
-C:/Users/jrodr/Documents/GraficasCompu/RayCastProject/build/CMakeFiles/ZERO_CHECK.dir

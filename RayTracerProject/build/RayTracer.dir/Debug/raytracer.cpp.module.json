@@ -1,0 +1,14 @@
+{
+    "version": 1,
+    "revision": 0,
+    "rules": [
+        {
+            "primary-output": "RayTracer.dir\\Debug\\RayTracer.obj",
+            "outputs": [
+                "C:\\Users\\jrodr\\Documents\\GraficasCompu\\RayTracerProject\\build\\RayTracer.dir\\Debug\\vc143.pdb",
+                "RayTracer.dir\\Debug\\"
+            ],
+            "requires": []
+        }
+    ]
+}

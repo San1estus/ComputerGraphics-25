@@ -1,0 +1,10 @@
+^C:\USERS\JRODR\DOCUMENTS\GRAFICASCOMPU\RAYTRACERPROJECT\BUILD\CMAKEFILES\85FD734501911905B72240659A1DEC78\GENERATE.STAMP.RULE
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/Users/jrodr/Documents/GraficasCompu/RayTracerProject -BC:/Users/jrodr/Documents/GraficasCompu/RayTracerProject/build --check-stamp-list CMakeFiles/generate.stamp.list --vs-solution-file C:/Users/jrodr/Documents/GraficasCompu/RayTracerProject/build/RayTraces.sln
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd

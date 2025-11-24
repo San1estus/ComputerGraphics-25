@@ -1,0 +1,13 @@
+{
+    "version": 1,
+    "revision": 0,
+    "rules": [
+        {
+            "primary-output": "RayTracer.dir\\Release\\RayTracer.obj",
+            "outputs": [
+                "RayTracer.dir\\Release\\"
+            ],
+            "requires": []
+        }
+    ]
+}

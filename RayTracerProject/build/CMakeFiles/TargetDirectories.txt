@@ -1,0 +1,3 @@
+C:/Users/jrodr/Documents/GraficasCompu/RayTracerProject/build/CMakeFiles/RayTracer.dir
+C:/Users/jrodr/Documents/GraficasCompu/RayTracerProject/build/CMakeFiles/ALL_BUILD.dir
+C:/Users/jrodr/Documents/GraficasCompu/RayTracerProject/build/CMakeFiles/ZERO_CHECK.dir
