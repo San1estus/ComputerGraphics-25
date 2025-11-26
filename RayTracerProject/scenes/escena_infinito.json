@@ -1,0 +1,159 @@
+{
+  "camera": {
+    "image_width": 900,
+    "aspect_ratio": 1.7777777777777777,
+    "samples_per_pixel": 200,
+    "max_depth": 50,
+    "vfov": 70,
+    "background": [0.0, 0.0, 0.0],
+    "lookfrom": [-1.5, 1.6, 1.5],
+    "lookat": [0.0, 0.8, 0.0],
+    "vup": [0.0, 1.0, 0.0]
+  },
+  "objects": [
+    
+    {
+      "type": "xz_rect",
+      "x0": -2.5, "x1": 2.5,
+      "z0": -2.5, "z1": 2.5,
+      "k": 0.0,
+      "material": { "type": "lambertian", "albedo": [0.6, 0.3, 0.0] }
+    },
+    
+    {
+      "type": "xz_rect",
+      "x0": -2.5, "x1": 2.5,
+      "z0": -2.5, "z1": 2.5,
+      "k": 3.0,
+      "material": { "type": "lambertian", "albedo": [0.1, 0.1, 0.1] }
+    },
+    
+    {
+      "type": "xy_rect",
+      "x0": -2.5, "x1": 2.5,
+      "y0": 0.0, "y1": 3.0,
+      "k": -2.5,
+      "material": { "type": "metal", "albedo": [1.0, 1.0, 1.0], "fuzz": 0.0 }
+    },
+    
+    {
+      "type": "xy_rect",
+      "x0": -2.5, "x1": 2.5,
+      "y0": 0.0, "y1": 3.0,
+      "k": 2.5,
+      "material": { "type": "metal", "albedo": [1.0, 1.0, 1.0], "fuzz": 0.0 }
+    },
+    
+    {
+      "type": "yz_rect",
+      "y0": 0.0, "y1": 3.0,
+      "z0": -2.5, "z1": 2.5,
+      "k": -2.5,
+      "material": { "type": "metal", "albedo": [1.0, 1.0, 1.0], "fuzz": 0.0 }
+    },
+    
+    {
+      "type": "yz_rect",
+      "y0": 0.0, "y1": 3.0,
+      "z0": -2.5, "z1": 2.5,
+      "k": 2.5,
+      "material": { "type": "metal", "albedo": [1.0, 1.0, 1.0], "fuzz": 0.0 }
+    },
+
+    {
+      "type": "sphere",
+      "center": [0.0, 0.5, 0.0],
+      "radius": 0.5,
+      "material": { 
+        "type": "phong", 
+        "albedo": [0.1, 0.2, 0.8], 
+        "shininess": 1000.0, 
+        "reflectivity": 0.5 
+      }
+    },
+    
+    {
+      "type": "box",
+      "p0": [-0.5, 0.0, -0.5],
+      "p1": [-0.3, 0.5, -0.3],
+      "material":{
+        "type": "lambertian",
+        "albedo":[0.3, 0.3, 1.0]
+      }
+    },
+    
+    {
+      "type": "sphere",
+      "center": [0.0, 1.2, 0.0],
+      "radius": 0.25,
+      "material": { 
+        "type": "phong", 
+        "albedo": [0.1, 0.2, 0.8], 
+        "shininess": 1000.0, 
+        "reflectivity": 0.5 
+      }
+    },
+
+    
+    
+    
+    {
+      "type": "sphere",
+      "center": [-0.7, 0.5, 0.5],
+      "radius": 0.3,
+      "material": {
+        "type": "dielectric",
+        "ir": 0.3
+      }
+    },
+    
+    {
+      "type": "cylinder",
+      "center": [0.5, 0.25, -0.7],
+      "radius": 0.25,
+      "height": 0.5,
+      "material": {
+        "type": "metal",
+        "albedo": [0.5, 0.5, 0.5],
+        "fuzz": 0.8
+      }
+    },
+    
+    {
+      "type": "box",
+      "p0": [0.7, 0.0, 0.5],
+      "p1": [1.0, 0.3, 0.8],
+      "material": {
+        "type": "lambertian",
+        "albedo": [0.7, 0.2, 0.7]
+      }
+    },
+    
+    
+    
+    {
+      "type": "sphere",
+      "center": [-1.5, 0.3, -1.0],
+      "radius": 0.3,
+      "material": {
+        "type": "lambertian",
+        "albedo": [0.5, 0.5, 0.5]
+      },
+      "texture": "imagen.jpg"
+    },
+    
+    
+    
+    { "type": "xz_rect", "x0": -1.9, "x1": -1.1, "z0": -2.0, "z1": -1.2, "k": 2.99, "material": { "type": "diffuse_light", "emit": [0.7, 1.0, 1.0] } },
+    { "type": "xz_rect", "x0": -1.9, "x1": -1.1, "z0": -0.4, "z1": 0.4, "k": 2.99, "material": { "type": "diffuse_light", "emit": [1.0, 0.7, 1.0] } },
+    { "type": "xz_rect", "x0": -1.9, "x1": -1.1, "z0": 1.2, "z1": 2.0, "k": 2.99, "material": { "type": "diffuse_light", "emit": [1.0, 1.0, 0.7] } },
+    
+    { "type": "xz_rect", "x0": -0.4, "x1": 0.4, "z0": -2.0, "z1": -1.2, "k": 2.99, "material": { "type": "diffuse_light", "emit": [1.0, 1.0, 0.7] } },
+    { "type": "xz_rect", "x0": -0.4, "x1": 0.4, "z0": -0.4, "z1": 0.4, "k": 2.99, "material": { "type": "diffuse_light", "emit": [1.0, 0.7, 1.0] } },
+    { "type": "xz_rect", "x0": -0.4, "x1": 0.4, "z0": 1.2, "z1": 2.0, "k": 2.99, "material": { "type": "diffuse_light", "emit": [0.7, 1.0, 1.0] } },
+    
+    { "type": "xz_rect", "x0": 1.1, "x1": 1.9, "z0": -2.0, "z1": -1.2, "k": 2.99, "material": { "type": "diffuse_light", "emit": [1.0, 0.7, 1.0] } },
+    { "type": "xz_rect", "x0": 1.1, "x1": 1.9, "z0": -0.4, "z1": 0.4, "k": 2.99, "material": { "type": "diffuse_light", "emit": [0.7, 1.0, 1.0] } },
+    { "type": "xz_rect", "x0": 1.1, "x1": 1.9, "z0": 1.2, "z1": 2.0, "k": 2.99, "material": { "type": "diffuse_light", "emit": [1.0, 1.0, 0.7] } }
+  ]
+}

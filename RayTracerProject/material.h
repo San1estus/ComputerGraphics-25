@@ -75,7 +75,6 @@ class dielectric : public material{
 	private:
 		double refraction_index;
 		static double reflectance(double cosine, double refraction_index) {
-        // Use Schlick's approximation for reflectance.
         auto r0 = (1 - refraction_index) / (1 + refraction_index);
         r0 = r0*r0;
         return r0 + (1-r0)*std::pow((1 - cosine),5);
@@ -105,41 +104,32 @@ public:
         : albedo(a), shininess(s), reflectivity(r) {}
 
     bool scatter(const ray& r_in, const hit_record& rec, color& attenuation, ray& scattered) const override {
-        // Decidimos aleatoriamente si este rayo contribuye al componente DIFUSO o ESPECULAR
-        // basándonos en la reflectividad del material.
         
         if (random_double() < reflectivity) {
-            // --- COMPONENTE ESPECULAR (El "Brillo") ---
-            // Calculamos la reflexión perfecta
+						// Luz especular
             vec3 reflected = reflect(unit_vector(r_in.direction()), rec.normal);
             
-            // Simular Shininess:
-            // Un shininess alto significa poca dispersión (fuzz bajo).
-            // Un shininess bajo significa mucha dispersión.
-            // Fórmula empírica para convertir exponente Phong a "fuzz":
+            // Shininess
             double fuzz = (shininess > 1000.0) ? 0.0 : (1.0 - (shininess / 1000.0));
-            // O una curva más agresiva: fuzz = 2.0 / (shininess + 2.0);
 
             // Generamos el rayo reflejado con un poco de aleatoriedad (fuzz)
             scattered = ray(rec.p, unit_vector(reflected) + fuzz * random_unit_vector());
             
-            // El color del brillo suele ser blanco en plásticos, o el albedo en metales.
-            // Para efecto Phong clásico (plástico), el brillo es blanco.
+            // Color de brillo reflejado 
             attenuation = color(1.0, 1.0, 1.0); 
 
             // Si el rayo se metió dentro del objeto por el fuzz, lo invalidamos (absorbemos)
             return (dot(scattered.direction(), rec.normal) > 0);
 
         } else {
-            // --- COMPONENTE DIFUSO (El Color Mate) ---
-            // Rebote Lambertiano estándar
+            // Esta es la parte de la luz difusa, igual al Lambertiano
             vec3 scatter_direction = rec.normal + random_unit_vector();
             
             if (scatter_direction.near_zero())
                 scatter_direction = rec.normal;
                 
             scattered = ray(rec.p, scatter_direction);
-            attenuation = albedo; // Aquí usamos el color del objeto
+            attenuation = albedo; 
             return true;
         }
     }

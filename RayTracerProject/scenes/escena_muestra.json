@@ -1,0 +1,135 @@
+{
+  "camera": {
+    "image_width": 900,
+    "samples_per_pixel": 400,
+    "max_depth": 50,
+    "vfov": 40,
+    "aspect_ratio": 1.7777777777777,
+    "background": [0.0, 0.0, 0.0],
+    "lookfrom": [6, 4, 10],
+    "lookat": [0, 0.5, 0]
+  },
+  "objects": [
+    {
+      "type": "sphere",
+      "center": [0, -1001, 0],
+      "radius": 1000,
+      "material": {
+        "type": "lambertian",
+        "albedo": [0.1, 0.9, 0.2]
+      }
+    },
+    {
+      "type": "xz_rect",
+      "x0": -3.0,
+      "x1": 3.0,
+      "z0": -3.0,
+      "z1": 3.0,
+      "k": 2.7,
+      "material": {
+        "type": "diffuse_light",
+        "emit": [10.0, 0.0, 0.0]
+      }
+    },
+    {
+      "type": "sphere",
+      "center": [8, 8, 8],
+      "radius": 1.0,
+      "material": {
+        "type": "diffuse_light",
+        "emit": [15, 15, 15]
+      }
+    },
+    {
+      "type": "sphere",
+      "center": [-8, 8, -8],
+      "radius": 1.0,
+      "material": {
+        "type": "diffuse_light",
+        "emit": [10, 10, 10]
+      }
+    },
+    {
+      "type": "sphere",
+      "center": [-1.5, 0.5, 3],
+      "radius": 0.5,
+      "material": {
+        "type": "dielectric",
+        "ir": 1.5
+      }
+    },
+    {
+      "type": "sphere",
+      "center": [0, 0.5, 3],
+      "radius": 0.5,
+      "material": {
+        "type": "phong",
+        "albedo": [0.1, 0.2, 0.9],
+        "shininess": 1000.0,
+        "reflectivity": 0.5
+      }
+    },
+    {
+      "type": "box",
+      "p0": [-1, 0.0, 0.5],
+      "p1": [-0.5, 1.5, 2.0],
+      "material":{
+        "type": "lambertian",
+				"albedo":[0.3, 0.3, 1.0]
+      }
+    },
+    {
+      "type": "cylinder",
+      "center": [1.5, 0.5, 3],
+      "radius": 0.5,
+      "height": 1.5,
+      "material": {
+        "type": "metal",
+        "albedo": [0.9, 0.5, 0.2],
+        "fuzz": 0.05
+      }
+    },
+    {
+      "type": "sphere",
+      "center": [0, 0, 0],
+      "radius": 1.0,
+      "material": {
+        "type": "lambertian",
+        "albedo": [0.8, 0.8, 0.8]
+      },
+			"texture": "earthmap.jpg",
+      "transforms": [
+        { "type": "scale", "x": 3.0, "y": 1.0, "z": 3.0 },
+        { "type": "rotate_y", "degrees": 30 },
+        { "type": "shear", "xz": 1.0 },
+        { "type": "translate", "x": -1.5, "y": 0.0, "z": -1 }
+      ]
+    },
+    {
+      "type": "cylinder",
+      "center": [0, 0, 0],
+      "radius": 0.5,
+      "height": 1.0,
+      "material": {
+        "type": "metal",
+        "albedo": [0.3, 0.5, 0.9],
+        "fuzz": 0.0
+      },
+      "transforms": [
+        { "type": "scale", "x": 1.0, "y": 2.0, "z": 1.0 },
+        { "type": "rotate_y", "degrees": -30 },
+        { "type": "shear", "xz": 0.5, "yx": 0.3 },
+        { "type": "translate", "x": 3.5, "y": 1.5, "z": -1 }
+      ]
+    },
+		{
+      "type": "sphere",
+      "center": [2, 1, 1],
+      "radius": 1.0,
+      "material": {
+        "type": "dielectric",
+				"ir": 0.3
+      }
+		}
+  ]
+}

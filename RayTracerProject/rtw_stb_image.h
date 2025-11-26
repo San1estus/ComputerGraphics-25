@@ -28,7 +28,7 @@ class rtw_image {
         auto filename = std::string(image_filename);
         auto imagedir = getenv("RTW_IMAGES");
 
-        // Hunt for the image file in some likely locations.
+        // Buscar la imagen en todas partes.
         if (imagedir && load(std::string(imagedir) + "/" + image_filename)) return;
         if (load(filename)) return;
         if (load("images/" + filename)) return;
