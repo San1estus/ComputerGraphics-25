@@ -29,9 +29,7 @@ Para ejecutarlo:
 Para mover la cámara en el espacio se usa WASD, para rotar la cámara es con el movimiento del ratón, también se puede hacer zoom con la rueda del mismo.
 
 Se tiene el siguiente orden para las articulaciones
-<!---
-Esta lista se puede actualizar
--->
+
 
 * 0 -- Torso
 * 1 -- Cabeza

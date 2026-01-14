@@ -14,6 +14,7 @@ class camera {
   int    image_width  = 100;  
   int    samples_per_pixel = 10;   
   int    max_depth         = 10;   
+	
   double vfov = 90; 
   color background; 
   

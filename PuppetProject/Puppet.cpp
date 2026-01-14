@@ -375,7 +375,7 @@ static unsigned int CreateShader(const string& vertexShader, string& fragmentSha
 
 	glAttachShader(program, vs);
 	glAttachShader(program, fs);
-    glLinkProgram(program);
+  glLinkProgram(program);
 	glValidateProgram(program);
 
     glDeleteShader(vs);
